@@ -3,3 +3,4 @@ notebook
 .Rproj.user
 *.RData
 *.Rhistory
+/code_old
