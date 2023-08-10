@@ -10,7 +10,7 @@ library(ISLR)
 library(tidyverse)
 library(caret)
 
-#load data
+#load data 
 ds <- read.csv("data/full_data_w_dummies_interaction.csv")
 
 #split in train, validation and test data
