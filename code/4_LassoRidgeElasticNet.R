@@ -39,7 +39,7 @@ caret::RMSE(pred = predict(lasso, validation), obs = validation$realrinc) #19987
 #Ridge
 ridge <- train(realrinc ~ female + . - occrecode -wrkstat - gender -educcat -maritalcat - age_sqr, data = train,
   method = "glmnet", trControl = trainControl(method = "cv"),
-  tuneGrid = expand.grid(alpha = 0, lambda = seq(0, 500, 1)))
-caret::RMSE(pred = predict(ridge_fit, College_test), obs = College_test$Apps)
+  tuneGrid = expand.grid(alpha = 0, lambda = seq(0, 500, 1))) #20039.76
+caret::RMSE(pred = predict(ridge, validation), obs = validation$realrinc)
 
 #Elastic Net
