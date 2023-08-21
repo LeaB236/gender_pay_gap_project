@@ -1,0 +1,278 @@
+---
+title: "The Gender Pay Gap in the General Social Survey"
+author: "Alex Amaguaya, Lea Bergmann"
+cols_authors: 3
+subtitle: "Statistical Learning"
+deadline: "tomorrow"
+type: "Term Paper"
+date: "today"
+supervisors: "Prof. Dr. Thomas Deckers, Karolina Gliszczynska"
+output:
+  pdf_document:
+    keep_tex: yes
+    template: template.tex
+    fig_caption: yes
+    citation_package: biblatex
+    number_sections: true
+toc: true
+lot: true
+lof: true
+graphics: true
+biblio-title: References
+fontsize: 11pt
+geometry: lmargin=2.5cm,rmargin=2.5cm,tmargin=2.5cm,bmargin=2.5cm
+biblio-files: references.bib
+classoption: a4paper
+---
+
+<!-- % Template Version 1.1 -->
+<!-- below function does some formatting for images; leave this untouched unless you know better :-) -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magick)
+library(tidyverse)
+library(stargazer)
+crop <- function(im, left = 0, top = 0, right = 0, bottom = 0) {
+  d <- dim(im[[1]]); w <- d[2]; h <- d[3]
+  image_crop(im, glue::glue("{w-left-right}x{h-top-bottom}+{left}+{top}"))
+}
+```
+
+# Rmarkdown Template
+
+Currently there is one thing you need to customise manually in *template.tex* which will be used by the \LaTeX processor for generating the PDF: the entries in the columns on the title page containing student info. Here you have to replace the dummy data:
+
+```
+\begin{multicols}{$cols_authors$}
+
+Name:
+
+Matriculation No.:
+
+E-Mail:
+
+Study Path:
+
+Semester:
+
+Graduation (est.):
+```
+
+If you are just two people, working alone or want to remove the colum design you may delete (parts of) this section.
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details see <http://rmarkdown.rstudio.com>.
+
+You may use \LaTeX\ to write formulas, e.g., $X^2 = \sqrt{X^4}$ and $$X^2 = \sqrt{X^4}.$$
+
+After clicking the *Knit* button in *RStudio*, a (PDF) document that includes both content and the output of any embedded R code chunks will be generated. 
+
+You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE, fig.cap="\\label{fig:pressure} Pressure", fig.height=4, fig.pos="t"}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. You can label the plot above by including the label `\\label{fig:pressure}` in the chunk argument `fig.cap`. A reference to the plot is then made as follows:
+
+Looking at Figure \ref{fig:pressure} makes me happy.
+
+## The YAML Header
+
+The YAML header is at the very top of this document. It is enclosed by 3 dashes. Although some useful options are specified already (most of which are hopefully self-explaining) you may want additional customisation. Below we discuss useful options that we have implemented for you.
+
+*Note that **indentation and line breaks matter** in the YAML header.* More about that [here](https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml).
+
+### `language`
+
+This variable affects mainly the headings of your output file and automatic hyphenation.
+
+You can set this to `english` or `german` like this:
+
+`language: english`
+
+`language: german`
+
+If the language is not specified in the YAML header it will be set to `english`.
+
+
+### `linespread`
+
+The default value for the linespread is 1.5. Usually this is fine and sometimes it's required. If you nevertheless want to change it you can do so by specifying the linespread variable, e.g.
+
+`linespread: 1`
+
+# Rmarkdown makes your life easy
+
+## The kable function
+
+In empirical work it's crucial not only to present your results but also to explain your research strategy. This often involves tables presenting data and results. Generating tables by hand using \LaTeX is an option but may be time consuming. However, there is a variety of R packages that automate this. One of them is the `kable` package. It can generate \LaTeX tables from a variety of R Objects.
+
+Example: you are working on an analysis of black cherry trees and want to present $n$ observations to the reader You can do that using `knitr::kable()`.
+
+```{r, echo=FALSE}
+data(trees)
+n <- 6
+knitr::kable(trees[sample(1:nrow(trees),n),], 
+             caption = paste(n, "Observations from the trees Dataset"),
+             row.names = F,
+             col.names = c("Diameter", "Height", "Volume"))
+```
+
+Now that we have presented our data it's analysis time! Lets start with a quick call to summary().
+
+## The Stargazer package
+
+Calling summary() in a code chunk will work but this will give you quite an ugly result (just try it for yourself!). When it comes to presenting more structured objects like summaries, model results or for example correlation matrices the stargazer package is well suited.
+
+```{r, results='asis', echo=FALSE}
+stargazer::stargazer(trees, header=FALSE, title = "Summary")
+```
+
+Assume we want to evaluate how the height and the volume of a typical cherry tree are related. We are estimating this using OLS to estimate a simple linear model.
+
+```{r, results='asis', echo = FALSE}
+mod <- lm(Volume ~ Height, data = trees)
+stargazer::stargazer(mod, title = "Regression results", header=FALSE)
+```
+
+Now that we have our model we can visualize it.
+
+```{r, echo = FALSE, fig.cap= "Dataset and regression"}
+plot(trees$Volume ~ trees$Height)
+abline(mod)
+```
+
+By the way: the (\LaTeX) command `\pagebreak` can be used to force a page break.
+
+\pagebreak
+
+## Citations
+
+A *bibtex* bibliography can be used for citations. The bibliography file used in this template is `references.bib` and you find it in the project directory. It is easily edited using *RStudio*
+
+A simple *bibtex* entry looks like this: 
+
+```
+@book{
+  Hastie2013,
+  publisher = {Springer},
+  year = {2013},
+  title = {The elements of statistical learning},
+  author = {Hastie, Trevor and Tibshirani, Robert and Friedman, Jerome H.},
+}
+```
+
+The first field (`Hastie2013`) is the identifier which allows you to cite a reference.
+
+You can cite a source in Harvard style like this: [@Hastie2013] or @Hastie2013.
+
+A cited source will be automatically added to the reference section at the end of the document.
+
+\pagebreak
+
+# Conclusion \label{chap:conc}
+
+Your conclusion. Note that you may also refer to a specific chapter or section in the document, provided there is a label. We have anchored a label to the section header of the Conclusion. You may reference it as follow: See Chapter \ref{chap:conc}.
+
+This section allows you to reference R packages used in the analysis. Simply include them in `R_packages.bib` as *bibtex* entries and include the identifiers using `\notecite{...}` as shown below.
+
+\pagebreak
+
+\addcontentsline{toc}{section}{References}
+\printbibliography[title = References]
+\cleardoublepage
+
+\begin{refsection}
+\nocite{R-base}
+\nocite{R-Studio}
+
+\printbibliography[title = Software-References]
+\addcontentsline{toc}{section}{Software-References}
+\end{refsection}
+
+<!---
+--------------------------------------------------------------------------------
+------------- Appendix ---------------------------------------------------------
+--------------------------------------------------------------------------------
+-->
+
+\cleardoublepage
+\appendix
+\setcounter{table}{0}
+\setcounter{figure}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+\renewcommand{\thefigure}{A\arabic{figure}}
+
+\newgeometry{top=2.5cm, left = 2cm, right = 2cm, bottom = 2.5cm}
+# Appendix
+## Description of relevant Variables \label{app:A}
+
+An example using the LaTeX environment *longtable*:
+
+\begin{longtable}{l|l|p{6cm}}
+\caption{Description of relevant variables} \\
+\hline
+\textbf{Variable} & \textbf{Dataset} & \textbf{Description}    \\
+\hline
+\endfirsthead % Erster Kopf zu Ende
+% Definition des Tabellenkopfes auf den folgenden Seiten
+\caption{Description of relevant variables (continued)}\\
+\hline
+\textbf{Variable} & \textbf{Dataset} & \textbf{Description}    \\
+\hline
+\endhead % Zweiter Kopf ist zu Ende
+\multicolumn{3}{r}{Continued on the next page.}\\
+\endfoot
+\hline
+\multicolumn{3}{r}{End of table.} \\
+\endlastfoot
+Student.Pseudonym & all & Student’s immatriculation number \\
+\hline
+Semester & FS Data & Academic semester. The first four digits stand for the year, the fifth digit is either a 1 (summer semester) or a 2 (winter semester). Example: "20062" describes the winter semester 2006/2007, "20071" the summer semester 2007 \\
+\hline
+FS & FS, Pruefung Data & Study semester \\
+\hline
+Status & FS Data & Status as a student. "R" stands for re-enrollment, "N" for new enrollment, "E" for initial enrollment and "B" for leave of absence \\
+\hline
+Status.dpp & Pruefung Data & See variable Status \\
+\hline
+Austrittsgrund & FS, Studium Data & Reason for dropping out \\
+\hline
+SGCode & all & Code for study program. The last digit represents the examination regulations (PO). A change to the PO is thus considered as a new program in the system \\
+\hline
+Abschluss\_Bezeichnung & FS, Pruefung Data & Name of the degree that students receive upon successful completion of their studies \\
+\hline
+Fach\_Bezeichnung & FS, Pruefung Data & Name of the course of studies \\
+\hline
+PO & all & Examination regulations \\
+\hline
+PolyvalentePruefungsnummer & Pruefung Data & Polyvalent examination number \\
+\hline
+Bezeichnung & Pruefung Data & Name of the examination \\
+\hline
+Pruefungssemester & Pruefung Data & Semester in which the student was registered for the exam. Structure analogous to the variable ‘Semester’ in FS Data \\
+\hline
+Status.Pruefung & Pruefung Data & Status of the exam. "BE" means Passed, "ZU" means Withdrawn, "NB" means Not Passed and "PV" means Examination Existing (applications or performances are available, but the whole module is not yet completed) \\
+\hline
+Versuchszahl & Pruefung Data & Trial number \\
+\hline
+Note & Pruefung Data & Grade \\
+\hline
+VerbuchteECTSCP & Pruefung Data & Received ECTSCP \\
+\hline
+Start\_Semester & Studium Data & Semester in which the studies were started. Structure analogous to the variable ‘Semester’ in FS Data \\
+\hline
+Ende\_Semester & Studium Data & Semester in which the studies were finshed. Structure analogous to the variable ‘Semester’ in FS Data
+\label{tab_var}
+\end{longtable}
