@@ -65,21 +65,43 @@ In order to evaluate which of the regression techniques predicts `realrinc` the 
 
 [Write something about cross validation?]
 
-# Data Preparation
+# Data Preparation & Feature Engineering
 
-Before conducting the regression analysis we prepared the data. The provided dataset has 54,842 observations and for 38.55% of the observations the outcome variable `realrinc` is missing. As we cannot predict the wage for those observations we removed them. This left us with a dataset containing 33,702 observations. Additionally, we do not know the occupation for some observations (`occ10 = 9997` ) and removed those. This diminishes the dataset to 33,244 observations.
+The initial data set contains 11 variables and a brief description of each variable is presented here:
 
-In this dataset still there were missing some values for some observations, e.g., number of children or occupation. To impute these values we used the `mice` function. We imputed age, occupational prestige and number of children with predictive mean matching. For the factor variables education and marital status we used polytomous logisitic regression. We receive six imputation datasets and use mean estimation for age, occupational prestige and number of children.
+- **year**: survey year
+- **realrinc**: respondent's base income (in constant 1986 USD)
+- **age**: respondent's age in years
+- **occ10**: respondent's occupation code
+- **occrecode**: recode of the occupation code into one of 11 main categories
+- **prestg10**: respondent's occupational prestige score
+- **childs**: number of children
+- **wrkstat**: work status of the respondent (full-time, part-time, temporarily not working, unemployed (laid off), etc)
+- **gender**: respondent's gender
+- **educcat**: respondent's degree level (Less Than High School, High School, etc)
+- **maritalcat**: respondent's marital status (Married, Widowed, Divorced, etc)
 
-With this dataset we create dummy variables for the factor variables. Additionally, we create interaction variables.
+## Data Preparation
 
-[Something about ANOVA test for interaction variables].
+A data preparation process was carried before the modeling. The initial dataset had 54,842 observations and the outcome variable `realrinc` had 38.55% of missing values. The imputation of the target variable was discarded to avoid generating a bias in the modeling and therefore it was decided to eliminate these records from the original data set. After this, the dataset contained 33,702 observations. Furthermore, it was impossible to deduce the occupation for some observations (`occ10 = 9997`) and these were removed from the dataset. At the end, the final dataset had 33,244 observations, and it was used for the modeling process.
 
-[Should we consider outlier handling? cf. Eichinger 2022]
+This dataset still had some missing values for the regressors, e.g., number of children, age, marital status, degree level, and others. The imputation process was carried using five variables via `mice` package. The features *age, occupational prestige and number of children* were imputed using the pmm (`predictive mean matching`) method, and whereas the polytomous logistic regression method was used for the factor variables (*education and marital status*). The imputation process used a number of multiple imputations of six, which means that the process had 6 different datasets, and then the estimation of the mean and the majority vote was applied to aggregate the datasets into a single dataset. The mean estimation was applied for the numeric variables and majority vote for the categorical variables..
 
-In a final step we calculate the correlation matrix using Spearman's rank correlation coefficient. We remove all variables that have a higher than 90% correlation with each other. Our final dataset then contains 33,244 observations of 361 variables.
+## Feature Engineering
 
-[Something about how we define the x variables for the models]
+The interaction variables were created after the imputation process. First, some interaction features were estimated using only the numerical variables, and then the numerical variables were transformed into categorical variables by dividing them into different ranges (e.g. age between 18 and 30, age between 31 and 50, etc). These new categorical variables and the initial categorical variables (*marital status, education, etc*) were transformed into dummy variables. And finally, the interaction variables were estimated with the group of dummy variables mentioned above.
+The inclusion of the interaction of the numeric variables were validate using a linear model, and the results showed that the p- values of the parameters for the interactions were less than 0,05.
+
+![table](includes/reg_table.png)
+
+Furthermore, a correlation matrix using Spearman's rank correlation coefficient was estimated with some numeric variables in order to support the previous results. The correlation results are shown in the following figure.
+
+![matrix_corr](includes/corr_matrix.png)
+
+After the data preparation and feature engineering processes, a final dataset was constructed with 33,244 observations and 421 features. Due to the large number of interaction variables, it was decided to reduce them and use only the interaction between a group of variables (*occrecode, educcat and prestg10*). After reduction, the modeling process was developed with 100 variables (numerical and interaction variables). The following figure shows the overview of the group of variables that were estimated and used in the models.
+
+![feature_process](includes/feature_process.png)
+
 
 # Model Training and Tuning
 
