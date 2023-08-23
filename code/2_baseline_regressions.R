@@ -18,11 +18,10 @@ set.seed(123)
 
 trainindex <- createDataPartition(y = ds$realrinc, p = 0.7, list = FALSE) # Split the data into training (70%) and remaining (30%)
 train <- ds[trainindex, ]
-remaining <- ds[-trainindex, ]
+test <- ds[-trainindex, ]
 
-valid_test_index <- createDataPartition(y = remaining$realrinc, p = 0.5, list = FALSE) # Split the remaining data into validation (50%) and test (50%)
-validation <- remaining[valid_test_index, ]
-test <- remaining[-valid_test_index, ]
+
+
 
 
 #OLS regressions
